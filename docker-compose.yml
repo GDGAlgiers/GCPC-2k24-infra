@@ -1,0 +1,105 @@
+version: "3"
+services:
+  mariadb:
+    image: mariadb:10.4
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpw
+      - MYSQL_USER=domjudge
+      - MYSQL_PASSWORD=djpw
+      - MYSQL_DATABASE=domjudge
+    volumes:
+      - domjudge_mariadb:/var/lib/mysql
+
+  domserver:
+    build: domserver/.
+    image: gcpc_domserver
+    environment:
+      - CONTAINER_TIMEZONE=Africa/Algiers
+      - MYSQL_HOST=mariadb
+      - MYSQL_ROOT_PASSWORD=rootpw
+      - MYSQL_USER=domjudge
+      - MYSQL_PASSWORD=djpw
+      - MYSQL_DATABASE=domjudge
+      - WAIT_HOSTS=mariadb:3306
+      - WAIT_HOSTS_TIMEOUT=200
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    ports:
+      - 80:80
+    depends_on:
+      - mariadb
+
+  judgehost:
+    image: gcpc_judgehost:7.1.1
+    hostname: gcpc_judgehost
+    environment:
+      - CONTAINER_TIMEZONE=Africa/Algiers
+      - JUDGEDAEMON_USERNAME=judgehost
+      - JUDGEDAEMON_PASSWORD=DFONdha0SpGBTiQw
+      - DAEMON_ID=0
+      - WAIT_HOSTS=domserver:80
+      - WAIT_HOSTS_TIMEOUT=200
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    links:
+      - domserver:domserver
+    depends_on:
+      - domserver
+    privileged: true
+
+  judgehost_1:
+    image: gcpc_judgehost:7.1.1
+    hostname: gcpc_judgehost_1
+    environment:
+      - CONTAINER_TIMEZONE=Africa/Algiers
+      - JUDGEDAEMON_USERNAME=judgehost_1
+      - JUDGEDAEMON_PASSWORD=password
+      - DAEMON_ID=1
+      - WAIT_HOSTS=domserver:80
+      - WAIT_HOSTS_TIMEOUT=200
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    links:
+      - domserver:domserver
+    depends_on:
+      - domserver
+    privileged: true
+
+  judgehost_2:
+    image: gcpc_judgehost:7.1.1
+    hostname: gcpc_judgehost_2
+    environment:
+      - CONTAINER_TIMEZONE=Africa/Algiers
+      - JUDGEDAEMON_USERNAME=judgehost_2
+      - JUDGEDAEMON_PASSWORD=password
+      - DAEMON_ID=1
+      - WAIT_HOSTS=domserver:80
+      - WAIT_HOSTS_TIMEOUT=200
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    links:
+      - domserver:domserver
+    depends_on:
+      - domserver
+    privileged: true
+
+  judgehost_4:
+    image: gcpc_judgehost:7.1.1
+    hostname: gcpc_judgehost_4
+    environment:
+      - CONTAINER_TIMEZONE=Africa/Algiers
+      - JUDGEDAEMON_USERNAME=judgehost_3
+      - JUDGEDAEMON_PASSWORD=password        
+      - DAEMON_ID=3
+      - WAIT_HOSTS=domserver:80
+      - WAIT_HOSTS_TIMEOUT=200
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    links:
+      - domserver:domserver
+    depends_on:
+      - domserver
+    privileged: true
+
+volumes:
+  domjudge_mariadb:

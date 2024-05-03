@@ -1,0 +1,66 @@
+<div class="table-wrapper">
+    <table class="data-table table table-striped table-hover table-sm" style="width:100%;">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">time</th>
+            <th scope="col">from</th>
+            <th scope="col">to</th>
+            <th scope="col">subject</th>
+            <th scope="col">text</th>
+        </tr>
+        </thead>
+        <tbody>
+        {%- for clarification in clarifications %}
+            {%- set link = path('team_clarification', {clarId: clarification.clarid}) %}
+
+            <tr class="{% if team.unreadClarifications.contains(clarification) %}unseen{% endif %}">
+                <td>
+                    <a data-ajax-modal data-ajax-modal-after="markSeen" href="{{ link }}">
+                        {{ clarification.submittime | printtime(null, clarification.contest) }}
+                    </a>
+                </td>
+                {%- if clarification.sender is null %}
+                    {%- set sender = 'Jury' %}
+                    {%- if clarification.recipient is null %}
+                        {%- set recipient = 'All' %}
+                    {%- else %}
+                        {%- set recipient = clarification.recipient.name %}
+                    {%- endif %}
+                {%- else %}
+                    {%- set recipient = 'Jury' %}
+                    {%- set sender = clarification.sender.name %}
+                {%- endif %}
+
+                <td>
+                    <a data-ajax-modal data-ajax-modal-after="markSeen" href="{{ link }}" title="{{ sender }}">
+                        {{ sender | truncate(30) }}
+                    </a>
+                </td>
+                <td>
+                    <a data-ajax-modal data-ajax-modal-after="markSeen" href="{{ link }}" title="{{ recipient }}">
+                        {{ recipient | truncate(30) }}
+                    </a>
+                </td>
+                <td>
+                    <a data-ajax-modal data-ajax-modal-after="markSeen" href="{{ link }}">
+                        {%- if clarification.problem -%}
+                            problem {{ clarification.problem.contestProblems.first.shortname -}}
+                        {%- elseif clarification.category -%}
+                            {{- categories[clarification.category]|default('general') -}}
+                        {%- else -%}
+                            general
+                        {%- endif -%}
+                    </a>
+                </td>
+
+                <td>
+                    <a data-ajax-modal data-ajax-modal-after="markSeen" href="{{ link }}">
+                        {{ clarification.summary }}
+                    </a>
+                </td>
+            </tr>
+        {%- endfor %}
+
+        </tbody>
+    </table>
+</div>

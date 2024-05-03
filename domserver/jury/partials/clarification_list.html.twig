@@ -1,0 +1,114 @@
+<div class="table-wrapper">
+<table class="data-table table table-striped table-hover table-sm" style="width:auto">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        {% if showExternalId %}
+            <th scope="col">external ID</th>
+        {% endif %}
+        {%- if current_contests | length > 1 %}
+
+            <th scope="col">contest</th>
+        {%- endif %}
+
+        <th scope="col">time</th>
+        <th scope="col">from</th>
+        <th scope="col">to</th>
+        <th scope="col">subject</th>
+
+        <th scope="col">text</th>
+        <th scope="col">state</th>
+        <th scope="col">who</th>
+        {% if queues | length > 1 %}
+             <th scope="col">queue</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {%- for clarification in clarifications %}
+        {%- set link = path('jury_clarification', {id: clarification.clarid}) %}
+
+        <tr>
+            <td><a href="{{ link }}">{{ clarification.clarid }}</a></td>
+            {% if showExternalId %}
+                <td><a href="{{ link }}">{{ clarification.externalid }}</a></td>
+            {% endif %}
+            {%- if current_contests | length > 1 %}
+
+                <td><a href="{{ link }}">{{ clarification.contest.shortname }}</a></td>
+            {%- endif %}
+
+            <td><a href="{{ link }}">{{ clarification.submittime | printtime(null, clarification.contest) }}</a></td>
+            {%- if clarification.sender is null %}
+                {%- set sender = 'Jury' %}
+                {%- if clarification.recipient is null %}
+                    {%- set recipient = 'All' %}
+                {%- else %}
+                    {%- set recipient = clarification.recipient.name %}
+                {%- endif %}
+            {%- else %}
+                {%- set recipient = 'Jury' %}
+                {%- set sender = clarification.sender.name %}
+            {%- endif %}
+
+            <td><a href="{{ link }}" title="{{ sender }}">{{ sender | truncate(30) }}</a></td>
+            <td><a href="{{ link }}" title="{{ recipient }}">{{ recipient | truncate(30) }}</a></td>
+            <td><a href="{{ link }}">
+                    {%- if clarification.problem -%}
+                        problem {{ clarification.problem.contestProblems.first.shortname -}}
+                    {%- elseif clarification.category -%}
+                        {{- categories[clarification.category]|default('general') -}}
+                    {%- else -%}
+                        general
+                    {%- endif -%}
+            </a></td>
+
+            <td><a href="{{ link }}">{{ clarification.summary }}</a></td>
+            {%- set claim = false %}
+            {%- if clarification.answered %}
+                {%- set answered = '<i class="fas fa-check" title="is answered"></i>' %}
+            {%- else %}
+                {%- set answered = '<i class="fas fa-times" title="not answered"></i>' %}
+                {%- if clarification.juryMember is empty %}
+                    {%- set claim = 'yes' %}
+                {%- else %}
+                    {%- set answered = '<i class="fas fa-user-lock" title="claimed"></i>' %}
+                {%- endif %}
+            {%- endif %}
+            {%- if clarification.juryMember is empty %}
+                {%- set juryMember = '&nbsp;' %}
+            {%- else %}
+                {%- set juryMember = clarification.juryMember %}
+            {%- endif %}
+
+            <td><a href="{{ link }}">{{ answered | raw }}</a></td>
+            <td><form action="{{ path('jury_clarification_claim', {clarId: clarification.clarid}) }}" method="post" class="form-inline">
+                {%- if claim and clarification.sender -%}
+                    <button name="claimed" value="1"
+                       class="btn btn-outline-success btn-sm">Claim</button>
+                {%- elseif not clarification.answered and app.user.username == juryMember %}
+                    <button name="claimed" value="0"
+                       class="btn btn-outline-success btn-sm">Unclaim</button>
+                {%- else -%}
+                    <a href="{{ link }}">{{ juryMember | raw }}</a>
+                {%- endif -%}
+		</form>
+            </td>
+{% if queues | length > 1 %}
+            <td data-search="{{ queues[clarification.queue]|default('') }}">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                 <div class="input-group-prepend"><div class="input-group-text" id="qig{{clarification.clarid}}"><i class="fab fa-quora"></i></div></div>
+                 {% for qk,qv in queues %}
+                 <label class="btn btn-sm btn-outline-secondary{% if qk == clarification.queue %} active{% endif %}">
+                 <input class="qbut" type="radio" name="queue[{{ clarification.clarid }}]" data-clarid="{{ clarification.clarid }}" id="q_{{ qk }}" value="{{ qk }}" autocomplete="off"{% if qk == clarification.queue %} checked{% endif %}> {{ qv }}
+                 </label>
+                 {% endfor %}
+            </div>
+            </td>
+{% endif %}
+        </tr>
+    {%- endfor %}
+
+    </tbody>
+</table>
+</div>
