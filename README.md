@@ -1,8 +1,6 @@
 # GCPC Algiers
 
-to run the platform
-
-1- cd build
-2- sudo sh ./build.sh 7.1.1
-3- cd ..
-4- sudo docker-compose up
+to run the platform:
+```bash
+sudo build/build.sh 7.1.1 && sudo docker-compose up
+``` 
