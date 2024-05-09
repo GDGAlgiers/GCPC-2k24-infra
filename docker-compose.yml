@@ -34,7 +34,6 @@ services:
     hostname: gcpc_judgehost
     environment:
       - CONTAINER_TIMEZONE=Africa/Algiers
-      - JUDGEDAEMON_USERNAME=judgehost
       - JUDGEDAEMON_PASSWORD=DFONdha0SpGBTiQw
       - DAEMON_ID=0
       - WAIT_HOSTS=domserver:80
@@ -52,8 +51,7 @@ services:
     hostname: gcpc_judgehost_1
     environment:
       - CONTAINER_TIMEZONE=Africa/Algiers
-      - JUDGEDAEMON_USERNAME=judgehost_1
-      - JUDGEDAEMON_PASSWORD=password
+      - JUDGEDAEMON_PASSWORD=DFONdha0SpGBTiQw
       - DAEMON_ID=1
       - WAIT_HOSTS=domserver:80
       - WAIT_HOSTS_TIMEOUT=200
@@ -70,8 +68,7 @@ services:
     hostname: gcpc_judgehost_2
     environment:
       - CONTAINER_TIMEZONE=Africa/Algiers
-      - JUDGEDAEMON_USERNAME=judgehost_2
-      - JUDGEDAEMON_PASSWORD=password
+      - JUDGEDAEMON_PASSWORD=DFONdha0SpGBTiQw
       - DAEMON_ID=1
       - WAIT_HOSTS=domserver:80
       - WAIT_HOSTS_TIMEOUT=200
@@ -88,8 +85,7 @@ services:
     hostname: gcpc_judgehost_4
     environment:
       - CONTAINER_TIMEZONE=Africa/Algiers
-      - JUDGEDAEMON_USERNAME=judgehost_3
-      - JUDGEDAEMON_PASSWORD=password        
+      - JUDGEDAEMON_PASSWORD=DFONdha0SpGBTiQw        
       - DAEMON_ID=3
       - WAIT_HOSTS=domserver:80
       - WAIT_HOSTS_TIMEOUT=200
